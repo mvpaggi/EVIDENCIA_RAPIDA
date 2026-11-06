@@ -35,7 +35,7 @@ button{cursor:pointer}
 
 .q{font-size:1.3rem;line-height:1.25;margin:4px 0 14px}
 .help{color:var(--gris);font-size:.9rem;margin:-6px 0 14px}
-input[type=text],input[type=date],textarea{width:100%;border:1.5px solid var(--linea);border-radius:12px;padding:14px;background:#fff;font-size:18px;min-height:56px}
+input[type=text],input[type=date],input[type=search],textarea{width:100%;border:1.5px solid var(--linea);border-radius:12px;padding:14px;background:#fff;font-size:18px;min-height:56px}
 textarea{min-height:130px;resize:none;line-height:1.35}
 input:focus,textarea:focus{border-color:var(--verde);outline:none;box-shadow:0 0 0 3px rgba(26,122,60,.15)}
 
@@ -147,7 +147,8 @@ var SECS=[
   ["Plaga viva o muerta fuera de dispositivo","EF","Gestam intensifica el control en el sector; Calidad evalúa si hubo contacto con producto o superficies."],
   ["Excrementos, roeduras, rastros o daño por plagas","EF","Limpiar y desinfectar el área; Gestam intensifica el control; Calidad evalúa el producto potencialmente afectado."],
   ["Nido, refugio o foco de reproducción","EF","Retirar el foco y eliminar la causa que lo permite; Gestam realiza el tratamiento."],
-  ["Plaga en materia prima, insumo o producto","EF","Segregar el lote y definir su destino según el procedimiento de producto no conforme; Gestam inspecciona el depósito."]]},
+  ["Plaga en materia prima, insumo o producto","EF","Segregar el lote y definir su destino según el procedimiento de producto no conforme; Gestam inspecciona el depósito."],
+  ["Dispositivo de control deteriorado o roto por uso o clima","C","Gestam repara o repone el dispositivo y verifica que quede fijo e identificado."]]},
  {k:"lp",n:"Limpieza y POES",d:"Suciedad, derrames, residuos, agua estancada",it:[
   ["Suciedad o restos de producto acumulados","P","Limpiar según POES y revisar la frecuencia definida para el sector."],
   ["Derrame sin limpiar","P","Limpiar el derrame en el momento y reforzar la instrucción de limpieza inmediata."],
@@ -178,18 +179,40 @@ var SECS=[
   ["Mercadería sin rotación o con permanencia prolongada (FIFO/FEFO)","P","Aplicar la rotación establecida e inspeccionar los lotes más antiguos."],
   ["Portón o puerta de muelle abierta sin operación","P","Mantener cerrado cuando no hay carga ni descarga."],
   ["Dispositivo de control obstruido, movido o retirado","P","Liberar el acceso y reubicar el dispositivo; no moverlo sin avisar a Gestam."],
-  ["Pallets o embalajes en desuso acumulados","P","Retirarlos o guardarlos en el sector asignado, fuera de las áreas de producto."]]},
+  ["Pallets o embalajes en desuso acumulados","P","Retirarlos o guardarlos en el sector asignado, fuera de las áreas de producto."],
+  ["Dispositivo de control roto o dañado por la operación (autoelevador, carga, limpieza)","P","Avisar al personal del sector para evitar nuevos golpes; Gestam repone el dispositivo."]]},
  {k:"pr",n:"Producción y BPM",d:"Prácticas del personal en áreas de proceso",it:[
   ["Puerta o abertura abierta durante el proceso","P","Mantener cerradas las aberturas durante el proceso."],
   ["Alimentos o bebidas del personal fuera de áreas permitidas","P","Reforzar la regla de BPM: alimentos del personal solo en el comedor."],
   ["Restos de producto o insumos fuera de lugar","P","Retirar los restos y reforzar el orden al cierre del turno."],
-  ["Dispositivo de control obstruido, movido o retirado","P","Liberar el acceso y reubicar el dispositivo; no moverlo sin avisar a Gestam."]]},
+  ["Dispositivo de control obstruido, movido o retirado","P","Liberar el acceso y reubicar el dispositivo; no moverlo sin avisar a Gestam."],
+  ["Dispositivo de control roto o dañado por la operación (limpieza, equipos, personal)","P","Avisar al personal del sector para evitar nuevos daños; Gestam repone el dispositivo."]]},
  {k:"sh",n:"Seguridad e higiene",d:"Químicos, accesos, condiciones inseguras",it:[
   ["Producto químico sin identificar o mal almacenado","P","Rotular y guardar en el depósito de químicos, separado de alimentos y envases."],
   ["Acceso al predio o edificio abierto sin control","P","Mantener el acceso cerrado o controlado fuera del horario de uso."],
   ["Condición insegura para inspeccionar dispositivos","C","Corregir la condición para permitir el acceso seguro del personal."]]},
  {k:"ot",n:"Otro sector",d:"Escribir el nombre del sector",it:[]}
 ];
+/* ---------- buscador de situaciones ---------- */
+var SINON={dispositivo:"cebadera estacion cebo portacebo trampa monitor caja",malla:"mosquitero tejido",burlete:"cepillo",
+  roto:"rotura danado golpeado",danado:"roto rotura",sucio:"suciedad mugre",abierto:"abierta"};
+function norm(t){return String(t||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");}
+var IDX=null;
+function buildIdx(){IDX=[];SECS.forEach(function(s){s.it.forEach(function(c,j){
+  var w=norm(c[0]+" "+s.n).split(/[^a-z0-9]+/).filter(Boolean),ex=[];
+  w.forEach(function(x){if(SINON[x])ex=ex.concat(SINON[x].split(" "));});
+  IDX.push({s:s.k,j:j,c:c,w:w.concat(ex)});});});}
+function tokOk(t,w){
+  var st=t.length>3?t.replace(/(as|os|es|a|o|s)$/,""):t;
+  for(var i=0;i<w.length;i++){var x=w[i];if(x.indexOf(t)===0)return true;if(st.length>2&&x.indexOf(st)===0&&x.length-st.length<=2)return true;}
+  return false;}
+function buscar(q){
+  if(!IDX)buildIdx();
+  var ts=norm(q).split(/[^a-z0-9]+/).filter(function(t){return t.length>1;});
+  if(!ts.length)return [];
+  return IDX.filter(function(e){return ts.every(function(t){return tokOk(t,e.w);});}).slice(0,10);
+}
+
 var FORT=["Sector ordenado y limpio","Corrección realizada desde la visita anterior","Franja sanitaria libre y respetada","Dispositivos accesibles y en su lugar","Aberturas y cerramientos en buen estado"];
 var CRITERIO="Criterio de clasificación. Riesgo: condición del lugar (estructura, equipo o entorno) que favorece el ingreso, el refugio o la alimentación de plagas, o evidencia de actividad de plagas. Desvío: práctica que no se cumple como está establecida, o riesgo ya informado que sigue sin corregir. Oportunidad de mejora: aspecto que funciona y admite mejora. Fortaleza: condición correcta o corrección verificada. La gravedad surge de la zona: exterior o perímetro, baja; área interna sin producto expuesto, media; área con producto o materia prima expuesta, alta. Sube un nivel si el hallazgo es reiterado o si la evidencia de plagas está fuera de un dispositivo de control.";
 
@@ -393,12 +416,26 @@ function setSit(it,sit){
 SCR.sec=mk(null,function(it,i,st){
   return {html:'<div class="big"><img src="'+it.img+'" alt="Foto"></div>'+
       '<div class="minirow"><button data-a="rot">⟳ Girar</button>'+(st.edit?"":'<button class="warn" data-a="disc">Descartar foto</button>')+'</div>'+
-      '<h2 class="q">¿Qué sector tiene que corregirlo?</h2><p class="help">Si es una plaga, un rastro o una captura, elegí Control de plagas.</p>'+
+      '<input id="srch" type="search" placeholder="Buscar: roto, malla, derrame…" autocomplete="off" enterkeyhint="search" aria-label="Buscar situación">'+
+      '<div id="sres"></div>'+
+      '<h2 class="q" style="margin-top:16px">¿Qué sector tiene que corregirlo?</h2><p class="help">Si es una plaga, un rastro o una captura, elegí Control de plagas.</p>'+
       SECS.map(function(s){return '<button class="opt'+(it.sec===s.k?" on":"")+'" data-v="'+s.k+'"><span>'+s.n+'<small>'+esc(s.d)+'</small></span><span class="ck"></span></button>';}).join(""),
     bind:function(){
       on(".opt",function(el){var v=el.dataset.v;
         if(v!==it.sec){it.sec=v;it.sit=null;it.k=null;if(it.titAuto){it.tit="";it.titAuto=false;}if(it.accAuto){it.acc="";it.accAuto=false;}if(v!=="ot")it.secx="";}
         nextStep(st);});
+      var pick=function(sk,j){
+        if(sk!==it.sec){it.sec=sk;it.sit=null;it.k=null;if(it.titAuto){it.tit="";it.titAuto=false;}if(it.accAuto){it.acc="";it.accAuto=false;}it.secx="";}
+        setSit(it,j);nextStep({s:"sit",id:it.id,edit:st.edit});};
+      var sr=$("srch"),res=[];
+      sr.addEventListener("input",function(){
+        res=buscar(sr.value);var box=$("sres");
+        if(!sr.value.trim()){box.innerHTML="";return;}
+        box.innerHTML=res.length?res.map(function(e,n){return '<button class="opt" data-n="'+n+'"><span>'+esc(e.c[0])+'<small>'+esc(secOf(e.s).n)+'</small></span>'+tagFor(e.c[1])+'</button>';}).join(""):
+          '<p class="help" style="margin:10px 2px 0">Sin coincidencias. Elegí el sector abajo o probá otra palabra.</p>';
+        qa("#sres .opt").forEach(function(b){b.addEventListener("click",function(){var e=res[+b.dataset.n];pick(e.s,e.j);});});
+      });
+      sr.addEventListener("keydown",function(e){if(e.key==="Enter"){e.preventDefault();if(res.length===1)pick(res[0].s,res[0].j);else sr.blur();}});
       on('[data-a=rot]',function(el){el.disabled=true;rotate(it).then(draw);});
       on('[data-a=disc]',function(){if(!confirm("¿Descartar esta foto?"))return;S.items.splice(i,1);queue=queue.filter(function(x){return x!==it.id;});
         if(queue.length)go({s:"sec",id:queue[0]},true);else go({s:"agregar"},true);});
