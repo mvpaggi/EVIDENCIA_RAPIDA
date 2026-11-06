@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
+<meta name="theme-color" content="#1A7A3C">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Supervisión MIP — Cocinas y Cafés</title>
+<style>
+:root{--verde:#1A7A3C;--verde-cl:#E8F5ED;--ambar:#F9A825;--rojo:#C62828;--naranja:#EF6C00;--tinta:#1F2A24;--gris:#5B6470;--linea:#D5DBD7;--fondo:#F2F5F3}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;overflow:hidden;background:#DDE4DF}
+body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--tinta);font-size:16px;line-height:1.4;-webkit-text-size-adjust:100%}
+h1,h2,h3{font-family:Georgia,"Times New Roman",serif;margin:0}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--ambar);outline-offset:2px}
+.hidden{display:none!important}
+
+#app{position:fixed;top:0;left:0;right:0;height:100vh;height:100dvh;max-width:640px;margin:0 auto;display:flex;flex-direction:column;background:var(--fondo)}
+.hd{flex:none;background:#fff;border-bottom:3px solid var(--verde);padding:calc(8px + env(safe-area-inset-top,0px)) 8px 8px;display:flex;align-items:center;gap:6px;min-height:58px}
+.hd .back{width:44px;height:44px;border:0;background:none;border-radius:50%;display:flex;align-items:center;justify-content:center;flex:none}
+.hd .back svg{width:24px;height:24px}
+.hd .tt{min-width:0;flex:1;padding-left:2px}
+.hd h1{font-size:1.1rem;color:var(--verde);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hd p{margin:0;font-size:.78rem;color:var(--gris);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hd img{height:30px;margin-right:6px;flex:none}
+.bd{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px 16px 24px}
+.ft{flex:none;background:#fff;border-top:1px solid var(--linea);padding:10px 12px calc(10px + env(safe-area-inset-bottom,0px));display:flex;gap:10px}
+.ft button{flex:1;min-height:52px;border-radius:12px;font-weight:700;font-size:1rem;border:2px solid var(--verde)}
+.ft .pri{background:var(--verde);color:#fff;flex:1.4}
+.ft .sec{background:#fff;color:var(--verde)}
+.kb .ft{padding-bottom:10px}
+
+.q{font-size:1.25rem;line-height:1.25;margin:4px 0 12px}
+.help{color:var(--gris);font-size:.88rem;margin:-4px 0 12px}
+label.f{display:block;font-size:.8rem;color:var(--gris);font-weight:600;margin:12px 0 4px}
+input[type=text],input[type=date],textarea{width:100%;border:1.5px solid var(--linea);border-radius:12px;padding:12px;background:#fff;font-size:17px;min-height:50px}
+textarea{min-height:96px;resize:vertical;line-height:1.35}
+input:focus,textarea:focus{border-color:var(--verde);outline:none;box-shadow:0 0 0 3px rgba(26,122,60,.15)}
+
+.home{text-align:center;padding-top:5vh}
+.home img{width:180px;max-width:60%}
+.home p{color:var(--gris);margin:14px auto 24px;max-width:340px}
+.cta{display:flex;flex-direction:column;gap:12px}
+.cta button{min-height:60px;border-radius:14px;border:2px solid var(--verde);background:#fff;color:var(--verde);font-weight:700;font-size:1.08rem}
+.cta button.main{background:var(--verde);color:#fff}
+.ok{background:var(--verde-cl);border-left:5px solid var(--verde);border-radius:10px;padding:12px 14px;margin-bottom:16px;font-weight:600;text-align:left}
+
+/* captura */
+.prog{background:#fff;border:1px solid var(--linea);border-radius:12px;padding:10px 12px;margin-bottom:14px;font-size:.88rem}
+.bar{height:8px;border-radius:4px;background:#E6EBE8;overflow:hidden;display:flex;margin-top:6px}
+.bar i{display:block;height:100%}
+.cap{background:#fff;border:2px solid var(--verde);border-radius:14px;padding:12px}
+.cap textarea{border:0;padding:4px;min-height:84px;box-shadow:none;font-size:17px}
+.cap textarea:focus{box-shadow:none}
+.tools{display:flex;gap:8px;margin-top:8px}
+.tools button{min-height:50px;border-radius:12px;border:1.5px solid var(--linea);background:#fff;font-weight:700;display:flex;align-items:center;justify-content:center;gap:6px;padding:0 12px}
+.tools .go{flex:1;background:var(--verde);color:#fff;border-color:var(--verde)}
+.tools svg{width:22px;height:22px}
+.mic.rec{background:var(--rojo);color:#fff;border-color:var(--rojo);animation:pl 1.2s infinite}
+@keyframes pl{50%{opacity:.7}}
+.thumbs{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.thumbs div{position:relative}
+.thumbs img{width:76px;height:76px;object-fit:cover;border-radius:8px;display:block;border:1px solid var(--linea)}
+.thumbs button{position:absolute;top:-6px;right:-6px;width:26px;height:26px;border-radius:50%;border:0;background:var(--tinta);color:#fff;font-size:14px;line-height:1}
+.hint{font-size:.8rem;color:var(--gris);margin:8px 2px 0}
+.nav3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:16px 0}
+.nav3 button{min-height:56px;border:1.5px solid var(--verde);border-radius:12px;background:#fff;color:var(--verde);font-weight:700;font-size:.9rem;line-height:1.15}
+
+/* propuesta */
+.prop{background:#fff;border:1px solid var(--linea);border-left:6px solid var(--c,var(--verde));border-radius:12px;padding:12px 14px;margin-bottom:12px}
+.prop .code{font-weight:800;color:var(--verde);margin-right:6px}
+.prop .ti{font-weight:700}
+.prop .ob{font-size:.82rem;color:var(--gris);margin-top:4px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chips button{min-height:42px;border:1.5px solid var(--linea);border-radius:21px;background:#fff;padding:0 14px;font-size:.9rem;font-weight:600}
+.chips button.on{background:var(--c,var(--verde));border-color:var(--c,var(--verde));color:#fff}
+.alt{margin-top:8px}
+.alt button{font-weight:500;font-size:.82rem;min-height:36px}
+.lbl{font-size:.8rem;color:var(--gris);font-weight:600;margin:14px 2px 6px}
+
+/* listas */
+.sech{font-family:Georgia,serif;font-size:1.02rem;margin:18px 2px 8px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.sech button{min-height:36px;border:1.5px solid var(--verde);border-radius:9px;background:#fff;color:var(--verde);font-weight:700;font-size:.78rem;padding:0 10px;flex:none;font-family:system-ui,sans-serif}
+.card{background:#fff;border:1px solid var(--linea);border-radius:12px;margin-bottom:12px;overflow:hidden}
+.row{display:flex;align-items:center;gap:10px;width:100%;min-height:56px;padding:9px 12px;border:0;border-bottom:1px solid #EEF1EF;background:#fff;text-align:left}
+.row:last-child{border-bottom:0}
+.row .cd{font-weight:800;font-size:.8rem;color:var(--verde);width:38px;flex:none}
+.row .tx{flex:1;min-width:0}
+.row .tx b{display:block;font-weight:600;font-size:.95rem;line-height:1.25}
+.row .tx small{display:block;color:var(--gris);font-size:.8rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.row img{width:46px;height:46px;object-fit:cover;border-radius:6px;flex:none}
+.st{flex:none;font-size:.72rem;font-weight:700;padding:3px 8px;border-radius:5px;color:#fff;white-space:nowrap}
+.st.none{background:#EEF1EF;color:#8A938D}
+.seg{display:flex;gap:6px}
+.seg button{flex:1;min-height:46px;border:1.5px solid var(--linea);border-radius:10px;background:#fff;font-weight:700;font-size:.82rem;padding:0 4px;line-height:1.1}
+.seg button.on{background:var(--c);border-color:var(--c);color:#fff}
+.bigt{font-weight:700;font-size:1.05rem;line-height:1.3}
+.obs{font-size:.85rem;color:var(--gris);margin:6px 0 4px}
+.fl{display:flex;gap:8px;align-items:flex-start}
+.fl textarea,.fl input{flex:1}
+.mini{width:50px;height:50px;flex:none;border:1.5px solid var(--linea);border-radius:12px;background:#fff;display:flex;align-items:center;justify-content:center}
+.mini svg{width:22px;height:22px}
+.mini.rec{background:var(--rojo);border-color:var(--rojo);color:#fff}
+.add1{width:100%;min-height:50px;border:2px dashed var(--verde);border-radius:12px;background:#fff;color:var(--verde);font-weight:700;margin-top:8px}
+.nota{font-size:.78rem;color:var(--gris);margin:10px 2px 0}
+
+.toast{position:fixed;left:50%;bottom:calc(90px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--tinta);color:#fff;padding:10px 16px;border-radius:8px;font-size:.9rem;z-index:9;opacity:0;pointer-events:none;transition:opacity .2s;max-width:90vw;text-align:center}
+.toast.show{opacity:1}
+@media (min-width:660px){#app{border-left:1px solid var(--linea);border-right:1px solid var(--linea)}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+/* ---------- informe (vista previa e impresión) ---------- */
+.rep{background:#fff;color:#20242a;font-family:Arial,Helvetica,sans-serif;font-size:12px;line-height:1.4;padding:18px;border-radius:8px;box-shadow:0 1px 6px #0001}
+.rep h1{font-family:Georgia,serif;font-size:20px;color:var(--verde);margin:0}
+.rep h2{font-family:Arial,sans-serif;font-size:13px;letter-spacing:.02em;margin:20px 0 8px;border-bottom:2px solid var(--verde);padding-bottom:4px;text-transform:uppercase;break-after:avoid}
+.rep h3{font-family:Arial,sans-serif;font-size:12px;margin:0 0 4px;color:var(--verde)}
+.rhead{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;border-bottom:2px solid var(--verde);padding-bottom:10px;margin-bottom:12px}
+.rhead img{height:46px}
+.rhead .r{text-align:right}
+.rhead .r p{margin:2px 0 0;color:#69717a;font-size:10.5px}
+.rmeta{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px 14px;margin-bottom:12px}
+.rmeta div span{display:block;font-size:9.5px;color:#69717a}
+.rmeta div b{font-size:12px}
+.lect{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:9px 10px;border-left:4px solid var(--c,var(--verde));background:#f6f8f9;margin-bottom:12px}
+.lect .sem{font-weight:800;color:var(--c)}
+.kp{display:inline-block;padding:2px 8px;border-radius:4px;color:#fff;font-weight:700;font-size:11px}
+.pans{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.pan{border:1px solid var(--linea);border-radius:6px;padding:9px 10px;background:#f7f9f8;break-inside:avoid;white-space:pre-wrap}
+.pan.w{grid-column:1/-1}
+.ptab{width:100%;border-collapse:collapse;font-size:11px}
+.ptab th{background:var(--verde);color:#fff;text-align:left;padding:5px 6px;font-weight:700}
+.ptab td{border-bottom:1px solid var(--linea);padding:5px 6px;vertical-align:top}
+.ptab tr{break-inside:avoid}
+.ri{border:1px solid var(--linea);border-left:4px solid var(--c);border-radius:6px;padding:8px 10px;margin:8px 0;break-inside:avoid}
+.ri .h{display:flex;gap:8px;align-items:flex-start}
+.ri .h .cd{font-weight:800;color:var(--verde);min-width:36px}
+.ri .h .t{flex:1;font-weight:700}
+.ri .d{margin:5px 0 0 44px}
+.ri .d p{margin:3px 0}
+.ri .ph{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 0 44px}
+.ri .ph img{width:150px;height:112px;object-fit:cover;border-radius:4px;border:1px solid var(--linea)}
+.okl{margin:6px 0 0;padding:0;list-style:none;columns:2;column-gap:18px;font-size:11px;color:#3d4a42}
+.okl li{break-inside:avoid;margin-bottom:2px}
+.okl b{color:var(--verde)}
+.rfoot{margin-top:22px;padding-top:8px;border-top:1px solid var(--linea);font-size:9.5px;color:#69717a}
+@media (max-width:520px){.rmeta{grid-template-columns:1fr 1fr}.pans{grid-template-columns:1fr}.okl{columns:1}.ri .d,.ri .ph{margin-left:0}.ri .ph img{width:46%;height:auto;aspect-ratio:4/3}}
+@media print{
+  @page{size:A4;margin:12mm}
+  html,body{height:auto;overflow:visible;background:#fff}
+  #app{position:static;height:auto!important;max-width:none;border:0;background:#fff;display:block}
+  .hd,.ft,.toast,.noprint{display:none!important}
+  .bd{overflow:visible;padding:0}
+  .rep{box-shadow:none;padding:0;border-radius:0}
+  .rmeta{grid-template-columns:1fr 1fr 1fr}.pans{grid-template-columns:1fr 1fr}.okl{columns:2}
+  .ri .d,.ri .ph{margin-left:44px}.ri .ph img{width:150px;height:112px}
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+</style>
+</head>
+<body>
+<div id="app">
+  <header class="hd">
+    <button class="back" id="hBack" type="button" aria-label="Volver"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button>
+    <div class="tt"><h1 id="hTitle"></h1><p id="hSub"></p></div>
+    <img id="hLogo" alt="">
+  </header>
+  <main class="bd" id="bd"></main>
+  <footer class="ft" id="ft"></footer>
+</div>
+<input type="file" id="inCam" accept="image/*" capture="environment" class="hidden">
+<input type="file" id="inGal" accept="image/*" multiple class="hidden">
+<input type="file" id="inJson" accept=".json,application/json" class="hidden">
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+"use strict";
+var LOGO="data:image/jpeg;base64,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R9aAPPbaORfh7pgAnGlnxXbtpa3W7eLP7Svlfe5x1255xivcPWuS+JekajrGh2Q0u1F7dWuo2t55BlWLescgZhubgHAqpqGseMNV0HWIIPDP9mag1qy2kr6jFIDIx25+XptBLf8AAcd6AOMubyU683xKDP8AYYNVGljrtOmj9y8n084mTPotdb4vibxb450zwpPK8ekCyk1O+ijcr9qAcRxxMRzsySxHfAHSoYvgR4SXQl099PZn+ziFp/tEuS23BfbuxnPPTFVrfwt4ot9N8N62iW7eKdJtnsLq2nmxFf2+QPvjO1jsVwSOCSDQBdWL4c6R4tsdOitNJsPEFtMq28cFsIpVcrwAyqM5U9CapfErSZPiFr8Pha3kaOKys5NTmlU/cnIKWoJ9m3v/AMAFWNRi8TeMdW8PC48OHRLXTtRS+mnub6KQsFR12oseSc7+px0pNI+Ftprt5q+seKtPEmqX147Ii3LjybdcJCmUYA/Ku76saAJLm/1T4i/B2WTSybfWrq18qSMSeWyzI22aLd/CSVdc9simeAv+EIv7+CLTtBtdC8Q6ehLWM9oILyAEbSc4y6kEjcCQc0/QvDer/D+XxHbaFpkV5pUrxXmn20t1sAkbCzxbjkj7u8E5GTimS6dr3jHxV4dv7zw+PD0OkTvcPczXUc00oKMnlII84UlgSSR90cUAei0UDiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKdijFADaKdijFADaKdijFADaKdijFADaKdijFADaKdijFADaKdijFADaKdijFADaKdijFADaKdijFADaKdijFADaKdijFADaKdijFADaKdijFADaKdijFADaKdijFADaKdijFADaKdijFADaKdijFADaKdijFADaKdijFADaKdijFADaKdiigD//Z";
+document.getElementById("hLogo").src=LOGO;
+
+/* =====================================================================
+   CHECKLIST — definición por datos. Para otra app de la suite
+   (industria, domicilios…) se reemplaza SECC y CHECK.
+   t: título del punto · s: nombre corto · o: qué observar
+   k: palabras clave para interpretar notas · a: acción sugerida
+   r: responsable por defecto
+   ===================================================================== */
+var TITULO="Supervisión MIP — Cocinas y Cafés";
+var SUBT="Estado de situación del establecimiento · seguimiento periódico · enfoque preventivo y responsabilidad compartida";
+var SECC=[
+  {k:"I",n:"Infraestructura y barreras"},
+  {k:"H",n:"Higiene, orden y fuentes de alimento"},
+  {k:"A",n:"Almacenamiento y materias primas"},
+  {k:"E",n:"Adyacencias y presión externa"},
+  {k:"M",n:"Evidencia de actividad y monitoreo"},
+  {k:"G",n:"Gestión MIP y acciones compartidas"}];
+var CHECK=[
+ {id:"I-01",s:"Muros y cielorrasos",t:"Muros, cielorrasos y encuentros sin grietas, huecos o cavidades que permitan refugio o circulación de plagas.",o:"Buscar aberturas, juntas deterioradas, cavidades y sectores inaccesibles.",
+  k:"grieta hueco cavidad muro pared cielorraso cielo raso techo junta revoque rajadura agujero",a:"Sellar grietas, huecos y juntas con material resistente y eliminar las cavidades inaccesibles.",r:"Local"},
+ {id:"I-02",s:"Puertas y aberturas",t:"Puertas, ventanas y otros accesos exteriores presentan barreras físicas adecuadas contra el ingreso de plagas.",o:"Revisar burletes, cierres, holguras, mosquiteros y puertas abiertas durante la operación.",
+  k:"puerta ventana burlete cepillo mosquitero malla tejido cierre holgura luz abertura portón",a:"Reponer burletes y mosquiteros, ajustar los cierres y mantener las puertas cerradas durante la operación.",r:"Local"},
+ {id:"I-03",s:"Pases de cañerías y cables",t:"Pasos de cañerías, cables, rejillas y otros puntos de penetración se encuentran sellados o protegidos.",o:"Priorizar comunicaciones con exterior, depósitos, cocina y sectores húmedos.",
+  k:"cañería caño cable pase penetración sellado sellar conducto ducto tubería",a:"Sellar los pases de cañerías y cables y proteger las aberturas con rejilla o malla.",r:"Local"},
+ {id:"I-04",s:"Desagües y sifones",t:"Desagües y sifones se encuentran íntegros, accesibles y sin condiciones que favorezcan refugio o reproducción.",o:"Revisar rejillas, materia orgánica, biofilm, agua estancada y pérdidas.",
+  k:"desagüe rejilla sifón pileta piso rejilla de piso cloaca drenaje canaleta",a:"Reparar rejillas y sifones y limpiar los desagües eliminando materia orgánica y biofilm.",r:"Local"},
+ {id:"I-05",s:"Acceso bajo y detrás de equipos",t:"Equipos, muebles y bajo-mesadas permiten inspección y limpieza suficientes.",o:"Especial atención detrás/debajo de hornos, heladeras, exhibidores y muebles.",
+  k:"bajo mesada bajomesada detrás debajo mueble exhibidor heladera horno inaccesible inspección zócalo",a:"Separar o elevar equipos y muebles para permitir la inspección y la limpieza por detrás y por debajo.",r:"Local"},
+ {id:"I-06",s:"Pérdidas y humedad",t:"Fuentes de agua, cámaras y equipos de frío no presentan pérdidas, condensación o humedad persistente.",o:"La humedad debe evaluarse como factor predisponente, no sólo como defecto edilicio.",
+  k:"pérdida condensación humedad húmedo goteo gotea agua cámara frío canilla charco",a:"Reparar pérdidas y condensación y secar las zonas con humedad persistente.",r:"Local"},
+ {id:"H-01",s:"Limpieza durante la operación",t:"Mesadas, zonas de elaboración y atención se mantienen limpias y ordenadas durante la operación.",o:"Observar condiciones reales de funcionamiento, no sólo al momento de la visita.",
+  k:"mesada elaboración limpieza limpio sucio sucia orden desorden atención barra mostrador",a:"Reforzar la limpieza y el orden durante la operación, no sólo al cierre.",r:"Local"},
+ {id:"H-02",s:"Sectores de difícil limpieza",t:"Sectores difíciles de limpiar están libres de grasa, restos de alimentos y residuos acumulados.",o:"Detrás/debajo de equipos, juntas, rincones, zócalos y estructuras.",
+  k:"grasa engrasado rincón zócalo acumulado acumulación restos detrás debajo junta",a:"Incorporar los sectores difíciles (detrás y debajo de equipos, zócalos, juntas) al plan de limpieza con frecuencia definida.",r:"Local"},
+ {id:"H-03",s:"Fuentes de alimento",t:"No se observan fuentes crónicas de alimento accesibles a plagas.",o:"Derrames, migas, harina, restos orgánicos, residuos en juntas o bajo equipos.",
+  k:"derrame miga migas harina azúcar restos orgánico comida alimento expuesto",a:"Eliminar derrames y restos orgánicos accesibles y limpiar juntas y bajo equipos.",r:"Local"},
+ {id:"H-04",s:"Residuos internos",t:"Residuos internos se mantienen contenidos, con retiro y limpieza adecuados.",o:"Evaluar recipientes, tapas, bolsas, derrames y frecuencia de retiro.",
+  k:"residuo basura cesto tacho tapa bolsa desperdicio orgánico rebalsado",a:"Usar recipientes con tapa, aumentar la frecuencia de retiro y lavar los recipientes.",r:"Local"},
+ {id:"H-05",s:"Equipos de elaboración y cafetería",t:"Equipos de elaboración y cafetería presentan condiciones compatibles con prevención de plagas.",o:"Cafeteras, hornos, tostadores, lavaplatos y equipos de frío.",
+  k:"cafetera máquina café molinillo horno tostador tostadora lavaplatos lavavajilla equipo motor heladera exhibidora",a:"Desarmar y limpiar a fondo los equipos, incluidas sus zonas internas y motores, con frecuencia definida.",r:"Local"},
+ {id:"H-06",s:"Materiales en desuso",t:"No existe acumulación innecesaria de materiales, envases, cartón, madera o elementos en desuso.",o:"Valorar refugios potenciales y pérdida de capacidad de inspección.",
+  k:"cartón caja madera envase desuso acumulación acumulado trasto chatarra",a:"Retirar cartón, madera, envases y elementos en desuso.",r:"Local"},
+ {id:"A-01",s:"Materias primas",t:"Materias primas y alimentos susceptibles de infestación se encuentran protegidos, íntegros y correctamente almacenados.",o:"Buscar envases dañados, perforaciones, exuvias, insectos, telarañas o material asociado.",
+  k:"materia prima harina cereal grano gorgojo polilla telaraña exuvia perforado perforación envase dañado bolsa rota",a:"Segregar y revisar la mercadería afectada y guardar los productos susceptibles en recipientes herméticos.",r:"Local"},
+ {id:"A-02",s:"Alimentos abiertos",t:"Alimentos abiertos se mantienen en recipientes adecuados, cerrados, identificados y elevados del piso.",o:"Evitar acceso directo y facilitar inspección.",
+  k:"abierto abierta recipiente tapa rótulo rotulado identificado piso elevado",a:"Trasvasar los alimentos abiertos a recipientes cerrados, rotulados y elevados del piso.",r:"Local"},
+ {id:"A-03",s:"Rotación de mercadería",t:"La rotación de materias primas evita permanencias innecesarias y facilita detectar infestaciones.",o:"FIFO/FEFO según corresponda; prestar atención a productos de baja rotación.",
+  k:"rotación fifo fefo vencido vencimiento antiguo stock baja rotación",a:"Aplicar FIFO/FEFO e inspeccionar los productos de baja rotación.",r:"Local"},
+ {id:"A-04",s:"Inspección de depósitos",t:"Depósitos, cámaras y estanterías permiten inspección de pisos, paredes y parte posterior.",o:"Evitar almacenamiento pegado a paredes o directamente sobre el piso.",
+  k:"depósito estantería estante cámara pegado pared piso franja almacenamiento",a:"Separar el almacenamiento de las paredes y del piso para permitir la inspección.",r:"Local"},
+ {id:"A-05",s:"Ingreso de mercadería",t:"Los ingresos de mercadería no introducen sistemáticamente condiciones favorables a plagas.",o:"Revisar cajas, cajones, pallets y mercadería antes de su incorporación al local.",
+  k:"ingreso mercadería recepción cajón caja pallet proveedor entrega",a:"Inspeccionar la mercadería al ingreso y retirar cajas y cajones del proveedor antes de llevarla al depósito.",r:"Local"},
+ {id:"E-01",s:"Entorno inmediato",t:"Accesos, veredas, patios y áreas exteriores inmediatas se mantienen sin residuos, acumulaciones o refugios relevantes.",o:"Evaluar el entorno como fuente de presión de plagas.",
+  k:"vereda patio exterior afuera acceso entrada fondo terraza",a:"Retirar residuos y acumulaciones de accesos, veredas y patios.",r:"Local"},
+ {id:"E-02",s:"Área de residuos",t:"Área de residuos y almacenamiento transitorio se encuentra controlada y separada de accesos/producción.",o:"Revisar derrames, contenedores, frecuencia de retiro y condiciones nocturnas.",
+  k:"contenedor volquete área de residuos basura exterior bolsas nocturno retiro",a:"Mantener los contenedores tapados, limpios y alejados de los accesos, y ajustar la frecuencia de retiro.",r:"Local"},
+ {id:"E-03",s:"Condiciones externas",t:"No se observan condiciones externas relevantes de agua, vegetación, materiales o infraestructura que favorezcan plagas.",o:"Identificar focos que puedan sostener presión hacia el establecimiento.",
+  k:"vegetación pasto pastizal baldío obra vecino lindero agua estancada entorno arroyo",a:"Corregir los focos externos (agua estancada, vegetación, materiales) o informar al responsable del predio.",r:"Local"},
+ {id:"E-04",s:"Carga y descarga",t:"Carga/descarga y accesos de proveedores presentan condiciones compatibles con prevención del ingreso de plagas.",o:"Puertas abiertas, mercadería, pallets y tiempos de exposición.",
+  k:"carga descarga proveedor trasera playón muelle",a:"Reducir el tiempo de puertas abiertas en carga y descarga y revisar pallets y mercadería al ingreso.",r:"Local"},
+ {id:"M-01",s:"Roedores",t:"No se observan evidencias de actividad de roedores.",o:"Heces, roeduras, huellas, madrigueras, olores, animales vivos/muertos o consumo anormal.",
+  k:"roedor rata ratón laucha heces excremento fecas roedura roído huella madriguera consumo roído",a:"Intensificar el control de roedores en el sector, identificar las vías de ingreso y limpiar las evidencias.",r:"Ambos",w:4},
+ {id:"M-02",s:"Insectos rastreros",t:"No se observan evidencias relevantes de insectos rastreros.",o:"Individuos, ootecas, exuvias, materia fecal, refugios o actividad en zonas críticas.",
+  k:"cucaracha blatella germánica rastrero hormiga ooteca chinche pececito",a:"Tratamiento focalizado de rastreros, corrección de refugios y limpieza de las evidencias.",r:"Ambos",w:4},
+ {id:"M-03",s:"Insectos voladores",t:"La actividad de insectos voladores se encuentra dentro de niveles compatibles con la operación.",o:"Observar individuos, tendencia de capturas y puntos de ingreso.",
+  k:"mosca volador mosquito avispa abeja insectocutor captura capturas lámina",a:"Revisar los puntos de ingreso y los equipos de captura, y ajustar su ubicación o cantidad.",r:"Ambos",w:4},
+ {id:"M-04",s:"Dípteros en sectores húmedos",t:"En sectores húmedos no se observa evidencia compatible con focos de reproducción de dípteros.",o:"Drosófilas, biofilm, materia orgánica, sifones y drenajes.",
+  k:"drosófila mosquita mosca de la fruta psychoda díptero biofilm foco larva",a:"Limpieza profunda de sifones y drenajes con producto para remover biofilm y tratamiento de los focos.",r:"Ambos",w:4},
+ {id:"M-05",s:"Dispositivos de monitoreo",t:"Los dispositivos de monitoreo/control se encuentran operativos, accesibles y correctamente ubicados.",o:"Estaciones, trampas adhesivas, equipos UV-A y otros dispositivos autorizados.",
+  k:"dispositivo estación cebo cebadera portacebo trampa adhesiva pegamento uv monitor movido movida faltante obstruido",a:"Reponer, reubicar o liberar el acceso a los dispositivos.",r:"MIP"},
+ {id:"M-06",s:"Registros de monitoreo",t:"Los registros de monitoreo permiten identificar tendencia y focos, no sólo presencia/ausencia.",o:"Revisar consumos, capturas, hallazgos y evolución respecto de visitas anteriores.",
+  k:"registro planilla monitoreo tendencia carpeta informe",a:"Completar los registros de monitoreo con capturas y consumos y analizar la tendencia por punto.",r:"MIP"},
+ {id:"G-01",s:"Frecuencia y alcance del servicio",t:"La frecuencia y alcance del servicio MIP son coherentes con la complejidad y el riesgo del establecimiento.",o:"Considerar actividad, infraestructura, entorno, operación y antecedentes.",
+  k:"frecuencia alcance servicio visitas mensual quincenal",a:"Revisar la frecuencia y el alcance del servicio según el riesgo actual.",r:"MIP"},
+ {id:"G-02",s:"Acciones preventivas",t:"Las acciones preventivas específicas (p. ej. manejo de biofilm/drenajes) tienen responsable, frecuencia y evidencia de ejecución.",o:"No basta con que exista un protocolo: debe verificarse su aplicación.",
+  k:"protocolo preventiva preventivo ejecución procedimiento",a:"Asignar responsable y frecuencia a las acciones preventivas y registrar su ejecución.",r:"Ambos"},
+ {id:"G-03",s:"Hallazgos anteriores",t:"Los hallazgos de visitas anteriores fueron corregidos o se encuentran formalmente en seguimiento.",o:"Identificar reincidencias y acciones vencidas.",
+  k:"visita anterior anterior reincidencia reincidente pendiente corregido sigue igual persiste",a:"Cerrar los hallazgos pendientes o fijar un nuevo plazo con responsable.",r:"Ambos"},
+ {id:"G-04",s:"Responsables y plazos",t:"Las acciones requeridas al local tienen responsable y plazo definido.",o:"El MIP debe funcionar como responsabilidad compartida.",
+  k:"responsable plazo asignado",a:"Definir responsable y plazo para cada acción requerida al local.",r:"Ambos"},
+ {id:"G-05",s:"Comunicación local–MIP",t:"Existe comunicación efectiva entre el local y el prestador MIP ante hallazgos o cambios operativos.",o:"Registrar avisos de actividad, obras, cambios de layout, horarios o proveedores.",
+  k:"comunicación aviso avisó obra cambio layout horario encargado",a:"Establecer un canal de aviso entre el local y el prestador ante hallazgos, obras o cambios.",r:"Ambos"}
+];
+var ESTADOS=[{k:"Conforme",c:"#1A7A3C",sh:"Conforme"},{k:"Requiere atención",c:"#EF6C00",sh:"Atención"},{k:"Crítico",c:"#C62828",sh:"Crítico"},{k:"N/A",c:"#78909C",sh:"N/A"}];
+var PRIOS=[{k:"Alta",c:"#C62828"},{k:"Media",c:"#F9A825"},{k:"Baja",c:"#1A7A3C"}];
+var RESPS=["Local","MIP","Ambos"];
+var PLAZOS=[{l:"Inmediato",d:0},{l:"7 días",d:7},{l:"15 días",d:15},{l:"30 días",d:30}];
+var PLANTEL=["Mariano Paggi","Diego Iglesias","Gabriel Bibbó","Kevin Juárez","Valentín Ciasca","Arón Cerono","Daniel Fernández","Joaquín Ortiz"];
+var PANELES=[
+  {k:"actividad",t:"Estado de actividad",ph:"Síntesis: roedores, rastreros, voladores, drosófilas u otras evidencias."},
+  {k:"predisponentes",t:"Condiciones predisponentes",ph:"Las 2–4 condiciones que más influyen sobre el riesgo actual."},
+  {k:"gestion",t:"Gestión MIP",ph:"Monitoreo, medidas preventivas, cumplimiento de acciones anteriores y coordinación."},
+  {k:"principales",t:"Principales puntos de atención",ph:"Sólo los puntos que realmente requieren atención del cliente."},
+  {k:"acciones",t:"Acciones prioritarias",ph:"Qué debe hacerse, por quién y en qué plazo."},
+  {k:"evolucion",t:"Evolución respecto de la visita anterior",ph:"Mejoras, reincidencias, nuevos focos y cuestiones pendientes."},
+  {k:"conclusion",t:"Conclusión técnica",ph:"Estado de situación, factores determinantes y prioridades. Evitar convertirla en una lista de incumplimientos."}];
+var METAF=[
+  {k:"cliente",t:"Cliente / cadena",ph:"Nombre de la cadena",req:1},
+  {k:"local",t:"Local",ph:"Local / sucursal"},
+  {k:"direccion",t:"Dirección",ph:"Dirección"},
+  {k:"periodo",t:"Período",ph:"Ej.: noviembre 2026"},
+  {k:"fechaVisita",t:"Fecha de visita",type:"date"},
+  {k:"encargado",t:"Responsable del local",ph:"Nombre / cargo"},
+  {k:"por",t:"Realizado por",ph:"Supervisor",chips:PLANTEL}];
+var PIE="Documento de supervisión MIP. El checklist se utiliza como herramienta de diagnóstico y seguimiento; la ausencia de evidencia de actividad en el momento de la visita no equivale por sí sola a ausencia de riesgo.";
+
+/* ---------- utilidades ---------- */
+function $(id){return document.getElementById(id);}
+function qa(sel){return Array.prototype.slice.call($("bd").querySelectorAll(sel));}
+function on(sel,fn){qa(sel).forEach(function(el){el.addEventListener("click",function(e){fn(el,e);});});}
+function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];});}
+function p2(n){return (n<10?"0":"")+n;}
+function iso(d){return d.getFullYear()+"-"+p2(d.getMonth()+1)+"-"+p2(d.getDate());}
+function today(){return iso(new Date());}
+function plusDays(n){var d=new Date();d.setDate(d.getDate()+n);return iso(d);}
+function fmtF(s){var m=/^(\d{4})-(\d\d)-(\d\d)$/.exec(s||"");return m?m[3]+"/"+m[2]+"/"+m[1]:"";}
+function norm(t){return String(t||"").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"");}
+function cap1(s){s=String(s||"").trim();return s?s.charAt(0).toUpperCase()+s.slice(1):s;}
+function estOf(k){for(var i=0;i<ESTADOS.length;i++)if(ESTADOS[i].k===k)return ESTADOS[i];return null;}
+function prioOf(k){for(var i=0;i<PRIOS.length;i++)if(PRIOS[i].k===k)return PRIOS[i];return null;}
+function chk(id){for(var i=0;i<CHECK.length;i++)if(CHECK[i].id===id)return CHECK[i];return null;}
+function secName(k){for(var i=0;i<SECC.length;i++)if(SECC[i].k===k)return SECC[i].n;return "";}
+var tT;function toast(m,ms){var t=$("toast");t.textContent=m;t.classList.add("show");clearTimeout(tT);if(ms!==0)tT=setTimeout(function(){t.classList.remove("show");},ms||2600);}
+function stBadge(e){var o=estOf(e);return o?'<span class="st" style="background:'+o.c+'">'+esc(o.sh)+'</span>':'<span class="st none">Sin evaluar</span>';}
+
+/* ---------- estado ---------- */
+function blankCheck(){return {estado:"",prioridad:"",obs:"",accion:"",responsable:"",fecha:"",photos:[]};}
+function blank(){
+  var s={meta:{fechaVisita:today()},checks:{},panels:{},log:[]};
+  METAF.forEach(function(f){if(!s.meta[f.k])s.meta[f.k]="";});
+  PANELES.forEach(function(p){s.panels[p.k]="";});
+  CHECK.forEach(function(c){s.checks[c.id]=blankCheck();});
+  return s;
+}
+var S=blank(),draft=null,pend=[];
+function C(id){return S.checks[id];}
+function evaluated(){return CHECK.filter(function(c){return C(c.id).estado;});}
+function counts(){var r={tot:CHECK.length,ev:0,"Conforme":0,"Requiere atención":0,"Crítico":0,"N/A":0};CHECK.forEach(function(c){var e=C(c.id).estado;if(e){r.ev++;r[e]++;}});return r;}
+function problems(){
+  var pr={"Alta":0,"Media":1,"Baja":2,"":3};
+  return CHECK.filter(function(c){var e=C(c.id).estado;return e==="Crítico"||e==="Requiere atención";})
+    .sort(function(a,b){var A=C(a.id),B=C(b.id);return (A.estado==="Crítico"?0:1)-(B.estado==="Crítico"?0:1)||pr[A.prioridad]-pr[B.prioridad];});
+}
+function semaforo(){var n=counts();return n["Crítico"]?{l:"Crítico",c:"#C62828"}:n["Requiere atención"]?{l:"Requiere atención",c:"#EF6C00"}:n.ev?{l:"Conforme",c:"#1A7A3C"}:{l:"Sin evaluar",c:"#78909C"};}
+
+/* =====================================================================
+   INTÉRPRETE DE NOTAS (texto o dictado) — reglas fijas, sin servidor
+   ===================================================================== */
+var STOP=" de la el los las del en un una con por para que se al y o a lo su sus hay muy mas pero como esta estan este esto son sin no bajo debajo detras arriba encima junto cerca sector zona area queda ";
+function stem(w){return w.length>4?w.replace(/(es|s)$/,""):w;}
+var KIDX=null;
+function buildK(){KIDX=CHECK.map(function(c){
+  var raw=norm(c.k),words=raw.split(/\s+/).filter(function(x){return STOP.indexOf(" "+x+" ")<0;});
+  var phr=[];/* frases de 2+ palabras definidas implícitamente: pares consecutivos útiles */
+  ["bajo mesada","cielo raso","mosca fruta","area residuos","agua estancada","materia prima","envase danado","bolsa rota","visita anterior","sigue igual","baja rotacion","puerta trasera","rejilla piso"].forEach(function(p){if(raw.indexOf(p)>=0)phr.push(p);});
+  return {c:c,w:words.map(stem),phr:phr,wt:c.w||2};});}
+function tokens(t){return norm(t).split(/[^a-z0-9ñ]+/).filter(function(x){return x.length>2&&STOP.indexOf(" "+x+" ")<0;}).map(stem);}
+function score(text){
+  if(!KIDX)buildK();
+  var nt=norm(text).replace(/\b(de la|del|de los|de las|la|el|los|las)\s+/g,""),ts=tokens(text);
+  return KIDX.map(function(e){
+    var sc=0,used={};
+    e.phr.forEach(function(p){if(nt.indexOf(p)>=0)sc+=e.wt+2;});
+    ts.forEach(function(t){for(var i=0;i<e.w.length;i++){var w=e.w[i];
+      if(!used[w]&&(w===t||(t.length>=5&&w.indexOf(t)===0)||(w.length>=5&&t.indexOf(w)===0))){used[w]=1;sc+=e.wt;break;}}});
+    return {id:e.c.id,sc:sc};
+  }).filter(function(x){return x.sc>0;}).sort(function(a,b){return b.sc-a.sc;});
+}
+/* si la nota menciona actividad de plagas, ese es el hallazgo; el lugar es sólo dónde ocurre */
+var ACT=["M-01","M-02","M-03","M-04"];
+function rank(text){var r=score(text),i;for(i=0;i<r.length;i++)if(ACT.indexOf(r[i].id)>=0)break;if(i>0&&i<r.length)r.unshift(r.splice(i,1)[0]);return r;}
+var NUM={un:1,uno:1,una:1,dos:2,tres:3,cuatro:4,cinco:5,seis:6,siete:7,ocho:8,diez:10,quince:15,veinte:20,treinta:30};
+function interpret(text){
+  var raw=String(text||"").trim(),nt=norm(raw),r={raw:raw};
+  /* comandos */
+  var pm=/^(actividad|estado de actividad|predisponentes|condiciones predisponentes|condiciones|gestion|gestion mip|principales|puntos de atencion|acciones|acciones prioritarias|evolucion|conclusion|conclusion tecnica)\s*[:,.-]\s*/.exec(nt);
+  if(pm){var map={actividad:"actividad","estado de actividad":"actividad",predisponentes:"predisponentes","condiciones predisponentes":"predisponentes",condiciones:"predisponentes",gestion:"gestion","gestion mip":"gestion",principales:"principales","puntos de atencion":"principales",acciones:"acciones","acciones prioritarias":"acciones",evolucion:"evolucion",conclusion:"conclusion","conclusion tecnica":"conclusion"};
+    return {panel:map[pm[1]],text:cap1(raw.slice(pm[0].length))};}
+  if(/(todo|resto|demas)\b.*\b(conforme|bien|en orden|sin novedad)/.test(nt)&&raw.length<60)return {restoConforme:true};
+  /* punto del checklist */
+  var cm=/\b([ihaemg])\s*-?\s*0?([1-6])\b/.exec(nt),cands=rank(raw);
+  if(cm&&chk(cm[1].toUpperCase()+"-0"+cm[2])){var fid=cm[1].toUpperCase()+"-0"+cm[2];cands=[{id:fid,sc:99}].concat(cands.filter(function(x){return x.id!==fid;}));}
+  r.cands=cands.slice(0,4).map(function(x){return x.id;});
+  r.id=r.cands[0]||null;
+  /* estado */
+  if(/\b(no aplica|n\/a)\b/.test(nt))r.estado="N/A";
+  else if(/\b(critic|grave|urgente|infestaci|abundante|muchas|muchos|nido|colonia|vivas|vivos|activa intensa)/.test(nt))r.estado="Crítico";
+  else if(/\b(conforme|sin novedad|sin evidencia|sin actividad|sin rastros|no se observa|no se detecta|en buen estado|en orden|todo bien|correcto|correcta|ok)\b/.test(nt))r.estado="Conforme";
+  else r.estado="Requiere atención";
+  /* prioridad */
+  var pr=/prioridad\s+(alta|media|baja)/.exec(nt);
+  r.prioridad=pr?cap1(pr[1]):r.estado==="Crítico"?"Alta":r.estado==="Requiere atención"?"Media":"";
+  /* responsable */
+  var RSX=/(responsable|a cargo|corri[gj]\w*|resuelv\w*|resolver|ocup\w*|encarg\w*|lo hace|hacerlo)\s+(de\s+|del\s+|el\s+|la\s+|por\s+)?(local|mip|gestam|nosotros|ambos)/;
+  var rs=RSX.exec(nt);
+  r.responsable=rs?(rs[3]==="local"?"Local":rs[3]==="ambos"?"Ambos":"MIP"):"";
+  /* plazo */
+  var d=null,m;
+  if(/\b(inmediat|hoy|en el dia)/.test(nt))d=0;
+  else if((m=/\b(\d{1,3}|un|una|dos|tres|cuatro|cinco|siete|diez|quince|veinte|treinta)\s+(dia|semana|mes)/.exec(nt))){var n=+m[1]||NUM[m[1]]||1;d=m[2]==="dia"?n:m[2]==="semana"?n*7:n*30;}
+  else if(/esta semana/.test(nt))d=7;
+  r.fecha=d==null?"":plusDays(d);
+  /* observación: texto sin las indicaciones de control */
+  var obs=raw.replace(/,?\s*(con\s+)?prioridad\s+(alta|media|baja)/ig,"")
+    .replace(/,?\s*(que\s+)?(lo\s+|la\s+|los\s+)?(responsable|a cargo|corri[gj]\S*|resuelv\S*|resolver|ocup\S*|encarg\S*|hace|hacerlo)\s+(de\s+|del\s+|el\s+|la\s+|por\s+)?(local|mip|gestam|nosotros|ambos)\b/ig,"")
+    .replace(/,?\s*(en|dentro de|plazo( de)?)\s+(\d{1,3}|un|una|dos|tres|cuatro|cinco|siete|diez|quince|veinte|treinta)\s+(d[ií]as?|semanas?|mes(es)?)/ig,"")
+    .replace(/,\s*(es\s+)?(cr[ií]tico|requiere atenci[oó]n|conforme|urgente|grave)\s*(?=,|$)/ig,"")
+    .replace(/^\s*[ihaemgIHAEMG]\s*-?\s*0?[1-6]\s*[:,.-]?\s*/,"")
+    .replace(/[\s,;.]+$/,"");
+  r.obs=cap1(obs);
+  return r;
+}
+function applyDraft(dr){
+  var c=chk(dr.id);if(!c)return;var x=C(c.id),prob=dr.estado==="Crítico"||dr.estado==="Requiere atención";
+  x.estado=dr.estado;x.prioridad=prob?(dr.prioridad||x.prioridad):"";
+  if(dr.obs)x.obs=x.obs&&x.obs.indexOf(dr.obs)<0?x.obs+"\n"+dr.obs:dr.obs;
+  if(prob){if(!x.accion)x.accion=c.a;x.responsable=dr.responsable||x.responsable||c.r;x.fecha=dr.fecha||x.fecha||plusDays(x.prioridad==="Alta"?7:x.prioridad==="Media"?15:30);}
+  x.photos=x.photos.concat(dr.photos||[]);
+  S.log.unshift({id:c.id,t:Date.now(),txt:dr.obs||dr.estado});S.log=S.log.slice(0,40);
+}
+
+/* ---------- dictado (Web Speech API) ---------- */
+var SR=window.SpeechRecognition||window.webkitSpeechRecognition,rec=null;
+var IMIC='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0014 0M12 18v3"/></svg>';
+var ICAM='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.6"/></svg>';
+var IGAL='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="3.5" y="4.5" width="17" height="15" rx="2"/><circle cx="9" cy="10" r="1.8"/><path d="M4 17l5-4.5 4 3.5 3-2.5 4 3.5"/></svg>';
+function stopRec(){if(rec){try{rec.stop();}catch(e){}}}
+function dictate(btn,ta){
+  if(!SR){toast("Este navegador no dicta: usá el micrófono del teclado.",3500);ta.focus();return;}
+  if(rec){stopRec();return;}
+  var base=ta.value.replace(/\s+$/,""),fin="";
+  rec=new SR();rec.lang="es-AR";rec.interimResults=true;rec.continuous=true;
+  rec.onresult=function(e){var inter="";for(var i=e.resultIndex;i<e.results.length;i++){var t=e.results[i][0].transcript;if(e.results[i].isFinal)fin+=t;else inter+=t;}
+    ta.value=(base?base+" ":"")+(fin+inter).trim();ta.dispatchEvent(new Event("input"));};
+  rec.onerror=function(e){if(e.error==="not-allowed")toast("Sin permiso para usar el micrófono.");};
+  rec.onend=function(){rec=null;btn.classList.remove("rec");};
+  try{rec.start();btn.classList.add("rec");}catch(e){rec=null;}
+}
+
+/* ---------- navegación ---------- */
+var stack=[{s:"home"}],skipPop=0,SCR={};
+function cur(){return stack[stack.length-1];}
+function go(st,replace){stopRec();if(replace){stack[stack.length-1]=st;}else{stack.push(st);try{history.pushState({n:stack.length},"");}catch(e){}}draw();}
+function back(){stopRec();if(stack.length<=1)return;stack.pop();skipPop++;try{history.back();}catch(e){skipPop--;}draw();}
+window.addEventListener("popstate",function(){if(skipPop){skipPop--;return;}if(stack.length>1){stopRec();stack.pop();draw();}});
+$("hBack").addEventListener("click",back);
+function draw(){
+  var st=cur(),r=SCR[st.s](st);
+  $("hBack").style.visibility=stack.length>1?"visible":"hidden";
+  $("hTitle").textContent=r.title;$("hSub").textContent=r.sub||"";
+  var bd=$("bd"),keep=st.keep?bd.scrollTop:0;bd.innerHTML=r.html;bd.scrollTop=keep;st.keep=false;
+  var ft=$("ft");ft.innerHTML="";
+  (r.act||[]).filter(Boolean).forEach(function(a){var b=document.createElement("button");b.type="button";b.className=a.p?"pri":"sec";b.textContent=a.l;b.addEventListener("click",a.fn);ft.appendChild(b);});
+  ft.classList.toggle("hidden",!ft.children.length);
+  if(r.bind)r.bind();
+  qa("[data-mic]").forEach(function(b){if(!SR)b.classList.add("hidden");b.addEventListener("click",function(){dictate(b,$(b.dataset.mic));});});
+  scheduleSave();
+}
+function redraw(){cur().keep=true;draw();}
+
+/* ---------- pantallas ---------- */
+SCR.home=function(){
+  var n=counts(),hay=hasData();
+  return {title:"Supervisión MIP",sub:"Cocinas y cafés — Consultora Gestam MDP S.A.",
+    html:'<div class="home"><img src="'+LOGO+'" alt=""><p>Dictá o escribí lo que ves, sumá fotos y la app arma el informe de supervisión completo para el cliente.</p>'+
+      (hay?'<div class="ok">Informe en curso: '+esc(S.meta.cliente||"sin cliente")+(S.meta.local?" — "+esc(S.meta.local):"")+' · '+n.ev+' de '+n.tot+' puntos evaluados.</div>':"")+
+      '<div class="cta">'+(hay?'<button class="main" data-a="cont">Continuar informe</button><button data-a="new">Nuevo informe</button>':'<button class="main" data-a="new">Nuevo informe</button>')+
+      '<button data-a="open">Abrir archivo de datos</button></div><p class="nota">Abre borradores de esta app y también los datos exportados del Consolidador MIP.</p></div>',
+    bind:function(){
+      on("[data-a=cont]",function(){go({s:"cap"});});
+      on("[data-a=new]",function(){if(hasData()&&!confirm("¿Empezar un informe nuevo? Se borra lo cargado."))return;S=blank();draft=null;pend=[];go({s:"datos",first:true});});
+      on("[data-a=open]",function(){$("inJson").click();});
+    }};
+};
+SCR.datos=function(st){
+  var h='<h2 class="q">Datos de la visita</h2>';
+  METAF.forEach(function(f){
+    h+='<label class="f" for="m_'+f.k+'">'+esc(f.t)+'</label><input id="m_'+f.k+'" type="'+(f.type||"text")+'" value="'+esc(S.meta[f.k])+'" placeholder="'+esc(f.ph||"")+'" autocomplete="off">';
+    if(f.chips)h+='<div class="chips" style="margin-top:8px">'+f.chips.map(function(c){return '<button data-ch="'+f.k+'" data-v="'+esc(c)+'" class="'+(S.meta[f.k]===c?"on":"")+'">'+esc(c)+'</button>';}).join("")+'</div>';
+  });
+  function save(){METAF.forEach(function(f){S.meta[f.k]=$("m_"+f.k).value.trim();});}
+  return {title:"Datos de la visita",sub:st.first?"Paso 1: después cargás los hallazgos":"Editar datos",html:h,
+    act:[{l:st.first?"Seguir":"Listo",p:1,fn:function(){save();if(!S.meta.cliente){toast("Completá el cliente.");return;}scheduleSave();if(st.first)go({s:"cap"},true);else back();}}],
+    bind:function(){
+      on("[data-ch]",function(el){$("m_"+el.dataset.ch).value=el.dataset.v;qa('[data-ch="'+el.dataset.ch+'"]').forEach(function(b){b.classList.toggle("on",b===el);});});
+      qa("input").forEach(function(i){i.addEventListener("change",function(){save();scheduleSave();});});
+    }};
+};
+function progHtml(){
+  var n=counts(),w=function(k){return (n[k]/n.tot*100).toFixed(1)+"%";};
+  return '<div class="prog"><b>'+n.ev+' de '+n.tot+'</b> puntos evaluados · <span style="color:#1A7A3C">'+pl(n["Conforme"],"conforme","conformes")+'</span> · <span style="color:#EF6C00">'+n["Requiere atención"]+' atención</span> · <span style="color:#C62828">'+pl(n["Crítico"],"crítico","críticos")+'</span>'+
+    '<div class="bar"><i style="width:'+w("Conforme")+';background:#1A7A3C"></i><i style="width:'+w("Requiere atención")+';background:#EF6C00"></i><i style="width:'+w("Crítico")+';background:#C62828"></i><i style="width:'+w("N/A")+';background:#78909C"></i></div></div>';
+}
+function thumbs(arr,attr){return arr.length?'<div class="thumbs">'+arr.map(function(p,i){return '<div><img src="'+p.img+'" alt=""><button type="button" '+attr+'="'+i+'" aria-label="Quitar foto">×</button></div>';}).join("")+'</div>':"";}
+SCR.cap=function(){
+  var m=S.meta,h=progHtml();
+  h+='<div class="cap"><textarea id="nota" placeholder="Ej.: cucarachas bajo la mesada de la cafetería, crítico, que lo corrija el local en 7 días">'+esc(cur().txt||"")+'</textarea>'+
+    thumbs(pend,"data-pd")+
+    '<div class="tools"><button class="mic" data-a="mic" type="button" aria-label="Dictar">'+IMIC+'</button><button data-a="cam" type="button" aria-label="Tomar foto">'+ICAM+'</button><button data-a="gal" type="button" aria-label="Galería">'+IGAL+'</button><button class="go" data-a="go" type="button">Interpretar</button></div></div>'+
+    '<p class="hint">'+(SR?"Tocá el micrófono y hablá; tocá de nuevo para cortar. ":"Para dictar, usá el micrófono del teclado. ")+'Podés empezar con “Conclusión:”, “Evolución:”, “Actividad:”… para escribir en el resumen, o decir “resto conforme”.</p>'+
+    '<div class="nav3"><button data-a="chk">Checklist</button><button data-a="res">Resumen ejecutivo</button><button data-a="pre">Vista previa</button></div>';
+  if(S.log.length){
+    h+='<div class="sech">Últimas cargas</div><div class="card">'+S.log.slice(0,8).map(function(l){var c=chk(l.id);if(!c)return "";var x=C(c.id);
+      return '<button class="row" data-id="'+c.id+'">'+(x.photos[0]?'<img src="'+x.photos[0].img+'" alt="">':"")+'<span class="cd">'+c.id+'</span><span class="tx"><b>'+esc(c.s)+'</b><small>'+esc(l.txt)+'</small></span>'+stBadge(x.estado)+'</button>';}).join("")+'</div>';
+  }
+  return {title:"Carga rápida",sub:[m.cliente,m.local,fmtF(m.fechaVisita)].filter(Boolean).join(" — "),html:h,
+    bind:function(){
+      var ta=$("nota");ta.addEventListener("input",function(){cur().txt=ta.value;});
+      on("[data-a=mic]",function(el){dictate(el,ta);});
+      on("[data-a=cam]",function(){$("inCam").click();});
+      on("[data-a=gal]",function(){$("inGal").click();});
+      on("[data-pd]",function(el){pend.splice(+el.dataset.pd,1);redraw();});
+      on("[data-a=go]",function(){stopRec();var t=ta.value.trim();
+        if(!t&&!pend.length){toast("Escribí o dictá una nota.");return;}
+        var r=interpret(t||"foto");
+        if(r.panel){S.panels[r.panel]=(S.panels[r.panel]?S.panels[r.panel]+"\n":"")+r.text;cur().txt="";toast("Agregado a "+PANELES.filter(function(p){return p.k===r.panel;})[0].t);redraw();return;}
+        if(r.restoConforme){var k=0;CHECK.forEach(function(c){if(!C(c.id).estado){C(c.id).estado="Conforme";k++;}});cur().txt="";toast(k+" puntos marcados como conformes");redraw();return;}
+        if(!t)r.obs="";
+        r.photos=pend.slice();draft=r;go({s:"prop"});});
+      on("[data-a=chk]",function(){go({s:"chk"});});
+      on("[data-a=res]",function(){go({s:"res"});});
+      on("[data-a=pre]",function(){go({s:"pre"});});
+      on(".row",function(el){go({s:"item",id:el.dataset.id});});
+    }};
+};
+SCR.prop=function(){
+  var d=draft;if(!d){return {title:"Hallazgo",html:"",act:[{l:"Volver",p:1,fn:back}]};}
+  var c=chk(d.id),prob=d.estado==="Crítico"||d.estado==="Requiere atención",col=(estOf(d.estado)||{}).c;
+  var h='<p class="help">Revisá lo que entendió la app y tocá Guardar. Todo se puede cambiar después.</p>';
+  if(c){
+    h+='<div class="prop" style="--c:'+col+'"><span class="code">'+c.id+'</span><span class="ti">'+esc(c.s)+'</span><div class="obs">'+esc(c.t)+'</div>'+
+      (C(c.id).estado?'<div class="ob">Ya cargado: '+esc(C(c.id).estado)+(C(c.id).obs?" — la nota se suma a la observación existente":"")+'</div>':"")+'</div>';
+  }else h+='<div class="prop" style="--c:#78909C"><span class="ti">No se reconoció el punto del checklist.</span><div class="ob">Elegilo abajo.</div></div>';
+  var alts=d.cands.filter(function(x){return x!==d.id;});
+  h+='<div class="lbl">'+(alts.length?"¿Es otro punto?":"Elegir punto")+'</div><div class="chips alt">'+alts.map(function(id){return '<button data-alt="'+id+'">'+id+" "+esc(chk(id).s)+'</button>';}).join("")+'<button data-a="pick">Ver todos…</button></div>';
+  h+='<div class="lbl">Estado</div><div class="seg">'+ESTADOS.map(function(e){return '<button data-es="'+e.k+'" style="--c:'+e.c+'" class="'+(d.estado===e.k?"on":"")+'">'+e.sh+'</button>';}).join("")+'</div>';
+  if(prob){
+    h+='<div class="lbl">Prioridad</div><div class="seg">'+PRIOS.map(function(p){return '<button data-pr="'+p.k+'" style="--c:'+p.c+'" class="'+(d.prioridad===p.k?"on":"")+'">'+p.k+'</button>';}).join("")+'</div>';
+    var rd=d.responsable||(c?C(c.id).responsable||c.r:"");
+    h+='<div class="lbl">Responsable</div><div class="chips">'+RESPS.map(function(x){return '<button data-rs="'+x+'" class="'+(rd===x?"on":"")+'">'+x+'</button>';}).join("")+'</div>';
+    h+='<div class="lbl">Plazo'+(d.fecha?": "+fmtF(d.fecha):"")+'</div><div class="chips">'+PLAZOS.map(function(p){return '<button data-pz="'+p.d+'" class="'+(d.fecha===plusDays(p.d)?"on":"")+'">'+p.l+'</button>';}).join("")+'</div>';
+  }
+  h+='<div class="lbl">Observación</div><div class="fl"><textarea id="dObs">'+esc(d.obs)+'</textarea><button class="mini" type="button" data-mic="dObs" aria-label="Dictar">'+IMIC+'</button></div>';
+  if(d.photos.length)h+='<div class="lbl">Fotos</div>'+thumbs(d.photos,"data-dp");
+  return {title:"Confirmar hallazgo",sub:c?c.id+" — "+secName(c.id.charAt(0)):"Elegí el punto",html:h,
+    act:[{l:"Descartar",fn:function(){draft=null;back();}},{l:"Guardar",p:1,fn:function(){
+      d.obs=$("dObs").value.trim();if(!d.id){toast("Elegí el punto del checklist.");return;}
+      applyDraft(d);draft=null;pend=[];var s1=stack[stack.length-2];if(s1&&s1.s==="cap")s1.txt="";toast("Guardado en "+d.id);back();}}],
+    bind:function(){
+      var sync=function(){d.obs=$("dObs").value;};
+      on("[data-alt]",function(el){sync();d.id=el.dataset.alt;redraw();});
+      on("[data-a=pick]",function(){sync();go({s:"chk",pick:true});});
+      on("[data-es]",function(el){sync();d.estado=el.dataset.es;var p=d.estado==="Crítico"||d.estado==="Requiere atención";
+        if(p&&!d.prioridad)d.prioridad=d.estado==="Crítico"?"Alta":"Media";if(d.estado==="Crítico")d.prioridad="Alta";redraw();});
+      on("[data-pr]",function(el){sync();d.prioridad=el.dataset.pr;redraw();});
+      on("[data-rs]",function(el){sync();d.responsable=el.dataset.rs;redraw();});
+      on("[data-pz]",function(el){sync();d.fecha=plusDays(+el.dataset.pz);redraw();});
+      on("[data-dp]",function(el){sync();d.photos.splice(+el.dataset.dp,1);redraw();});
+    }};
+};
+SCR.chk=function(st){
+  var h=st.pick?'<p class="help">Elegí el punto al que corresponde la nota.</p>':progHtml();
+  SECC.forEach(function(s){
+    var its=CHECK.filter(function(c){return c.id.charAt(0)===s.k;});
+    var faltan=its.filter(function(c){return !C(c.id).estado;}).length;
+    h+='<div class="sech"><span>'+esc(s.n)+'</span>'+(!st.pick&&faltan?'<button data-ok="'+s.k+'">Resto conforme</button>':"")+'</div><div class="card">'+
+      its.map(function(c){var x=C(c.id);return '<button class="row" data-id="'+c.id+'">'+(x.photos[0]?'<img src="'+x.photos[0].img+'" alt="">':"")+'<span class="cd">'+c.id+'</span><span class="tx"><b>'+esc(c.s)+'</b><small>'+esc(x.obs?x.obs.split("\n")[0]:c.o)+'</small></span>'+stBadge(x.estado)+'</button>';}).join("")+'</div>';
+  });
+  return {title:st.pick?"Elegir punto":"Checklist",sub:st.pick?"":"Tocá un punto para completarlo",html:h,
+    act:st.pick?null:[{l:"Vista previa",fn:function(){go({s:"pre"});}},{l:"Carga rápida",p:1,fn:function(){go({s:"cap"});}}],
+    bind:function(){
+      on(".row",function(el){if(st.pick){draft.id=el.dataset.id;back();}else go({s:"item",id:el.dataset.id});});
+      on("[data-ok]",function(el){var k=0;CHECK.forEach(function(c){if(c.id.charAt(0)===el.dataset.ok&&!C(c.id).estado){C(c.id).estado="Conforme";k++;}});toast(k+" puntos conformes");redraw();});
+    }};
+};
+SCR.item=function(st){
+  var c=chk(st.id),x=C(c.id),prob=x.estado==="Crítico"||x.estado==="Requiere atención";
+  var h='<div class="bigt"><span style="color:#1A7A3C">'+c.id+'</span> '+esc(c.t)+'</div><div class="obs"><b>Observar:</b> '+esc(c.o)+'</div>'+
+    '<div class="lbl">Estado</div><div class="seg">'+ESTADOS.map(function(e){return '<button data-es="'+e.k+'" style="--c:'+e.c+'" class="'+(x.estado===e.k?"on":"")+'">'+e.sh+'</button>';}).join("")+'</div>';
+  if(prob){
+    h+='<div class="lbl">Prioridad</div><div class="seg">'+PRIOS.map(function(p){return '<button data-pr="'+p.k+'" style="--c:'+p.c+'" class="'+(x.prioridad===p.k?"on":"")+'">'+p.k+'</button>';}).join("")+'</div>';
+  }
+  h+='<div class="lbl">Hallazgo / observación</div><div class="fl"><textarea id="iObs" placeholder="Describir sólo lo relevante…">'+esc(x.obs)+'</textarea><button class="mini" type="button" data-mic="iObs" aria-label="Dictar">'+IMIC+'</button></div>';
+  if(prob){
+    h+='<div class="lbl">Acción requerida</div><div class="fl"><textarea id="iAcc" placeholder="Qué debe modificarse o verificarse…">'+esc(x.accion)+'</textarea><button class="mini" type="button" data-mic="iAcc" aria-label="Dictar">'+IMIC+'</button></div>'+
+      (x.accion!==c.a?'<div class="chips" style="margin-top:6px"><button data-a="sug">Usar acción sugerida</button></div>':"")+
+      '<div class="lbl">Responsable</div><div class="chips">'+RESPS.map(function(r){return '<button data-rs="'+r+'" class="'+(x.responsable===r?"on":"")+'">'+r+'</button>';}).join("")+'</div>'+
+      '<div class="lbl">Fecha objetivo</div><input id="iFec" type="date" value="'+esc(x.fecha)+'"><div class="chips" style="margin-top:8px">'+PLAZOS.map(function(p){return '<button data-pz="'+p.d+'">'+p.l+'</button>';}).join("")+'</div>';
+  }
+  h+='<div class="lbl">Fotos / evidencia</div>'+thumbs(x.photos,"data-ip")+'<div class="tools"><button data-a="cam" type="button">'+ICAM+' Foto</button><button data-a="gal" type="button">'+IGAL+' Galería</button></div>';
+  if(x.estado)h+='<button class="add1" data-a="clr" style="border-color:#C62828;color:#C62828">Borrar evaluación de este punto</button>';
+  function sync(){x.obs=$("iObs").value.trim();if($("iAcc"))x.accion=$("iAcc").value.trim();if($("iFec"))x.fecha=$("iFec").value;}
+  return {title:c.id+" — "+c.s,sub:secName(c.id.charAt(0)),html:h,
+    act:[{l:"Listo",p:1,fn:function(){sync();back();}}],
+    bind:function(){
+      ["iObs","iAcc","iFec"].forEach(function(k){var e=$(k);if(e)e.addEventListener("change",function(){sync();scheduleSave();});});
+      on("[data-es]",function(el){sync();var v=el.dataset.es;x.estado=x.estado===v?"":v;var p=x.estado==="Crítico"||x.estado==="Requiere atención";
+        if(p){if(!x.prioridad||x.estado==="Crítico")x.prioridad=x.estado==="Crítico"?"Alta":"Media";if(!x.accion)x.accion=c.a;if(!x.responsable)x.responsable=c.r;if(!x.fecha)x.fecha=plusDays(x.prioridad==="Alta"?7:15);}
+        else x.prioridad="";redraw();});
+      on("[data-pr]",function(el){sync();x.prioridad=el.dataset.pr;redraw();});
+      on("[data-rs]",function(el){sync();x.responsable=el.dataset.rs;redraw();});
+      on("[data-pz]",function(el){sync();x.fecha=plusDays(+el.dataset.pz);redraw();});
+      on("[data-a=sug]",function(){sync();x.accion=c.a;redraw();});
+      on("[data-ip]",function(el){sync();x.photos.splice(+el.dataset.ip,1);redraw();});
+      on("[data-a=cam]",function(){sync();photoTarget=x;$("inCam").click();});
+      on("[data-a=gal]",function(){sync();photoTarget=x;$("inGal").click();});
+      on("[data-a=clr]",function(){if(!confirm("¿Borrar estado, observación, acción y fotos de este punto?"))return;S.checks[c.id]=blankCheck();redraw();});
+    }};
+};
+
+/* ---------- resumen ejecutivo: borrador automático ---------- */
+function pl(n,a,b){return n+" "+(n===1?a:b);}
+function yJoin(a){return a.length>1?a.slice(0,-1).join(", ")+" y "+a[a.length-1]:a.join("");}
+function lower1(s){return s?s.charAt(0).toLowerCase()+s.slice(1):s;}
+function firstLine(s){return String(s||"").split("\n")[0].trim();}
+function autoPanels(){
+  var P={},pb=problems(),n=counts(),sem=semaforo();
+  P.actividad=["M-01","M-02","M-03","M-04"].map(function(id){var c=chk(id),x=C(id);if(!x.estado||x.estado==="N/A")return null;
+    return c.s+": "+(x.estado==="Conforme"?"sin evidencias en la visita.":lower1(x.estado)+(x.obs?" — "+lower1(firstLine(x.obs)):"")+".");}).filter(Boolean).join("\n");
+  P.predisponentes=pb.filter(function(c){return "IHAE".indexOf(c.id.charAt(0))>=0;}).slice(0,4).map(function(c){var x=C(c.id);return "• "+c.s+(x.obs?": "+lower1(firstLine(x.obs)):"")+".";}).join("\n");
+  var GI=["M-05","M-06","G-01","G-02","G-03","G-04","G-05"],gok=[];
+  P.gestion=GI.map(function(id){var c=chk(id),x=C(id);if(!x.estado||x.estado==="N/A")return null;
+    if(x.estado==="Conforme"&&!x.obs){gok.push(lower1(c.s));return null;}
+    return "• "+c.s+": "+lower1(x.estado)+(x.obs?" — "+lower1(firstLine(x.obs)):"")+".";}).filter(Boolean).join("\n");
+  if(gok.length)P.gestion+=(P.gestion?"\n":"")+"Sin observaciones: "+yJoin(gok)+".";
+  P.principales=pb.slice(0,6).map(function(c){var x=C(c.id);return "• ["+(x.estado==="Crítico"?"Crítico":"Atención")+"] "+c.s+(x.obs?": "+lower1(firstLine(x.obs)):"")+".";}).join("\n");
+  P.acciones=pb.slice(0,8).map(function(c){var x=C(c.id);return "• "+(x.accion||c.a).replace(/\.$/,"")+" (responsable: "+(x.responsable||c.r)+(x.fecha?"; plazo: "+fmtF(x.fecha):"")+").";}).join("\n");
+  var g3=C("G-03");P.evolucion=g3.obs||"";
+  var act=["M-01","M-02","M-03","M-04"].filter(function(id){var e=C(id).estado;return e==="Crítico"||e==="Requiere atención";}).map(function(id){return lower1(chk(id).s);});
+  var fac=pb.filter(function(c){return "IHAE".indexOf(c.id.charAt(0))>=0;}).slice(0,3).map(function(c){return lower1(c.s);});
+  var con="Estado general: "+lower1(sem.l)+". Se evaluaron "+n.ev+" puntos: "+pl(n["Conforme"],"conforme","conformes")+", "+pl(n["Requiere atención"],"que requiere atención","que requieren atención")+" y "+pl(n["Crítico"],"crítico","críticos")+".";
+  con+=act.length?" Se registra actividad de "+yJoin(act)+".":n.ev?" No se registraron evidencias de actividad durante la visita.":"";
+  if(fac.length)con+=(fac.length===1?" El factor que más influye sobre el riesgo actual es: ":" Los factores que más influyen sobre el riesgo actual son: ")+yJoin(fac)+".";
+  if(pb.length)con+=" Prioridades: "+pb.slice(0,3).map(function(c){return lower1((C(c.id).accion||c.a).replace(/\.$/,""));}).join("; ")+".";
+  P.conclusion=n.ev?con:"";
+  return P;
+}
+SCR.res=function(){
+  var h='<p class="help">Podés dictar cada panel o generar un borrador con lo cargado en el checklist y ajustarlo.</p>'+
+    '<div class="seg" style="margin-bottom:6px"><button data-a="auto" style="--c:#1A7A3C" class="on">Completar vacíos</button><button data-a="redo">Rehacer todo</button></div>';
+  PANELES.forEach(function(p){
+    h+='<label class="f" for="p_'+p.k+'">'+esc(p.t)+'</label><div class="fl"><textarea id="p_'+p.k+'" placeholder="'+esc(p.ph)+'" rows="'+(p.k==="conclusion"?6:4)+'">'+esc(S.panels[p.k])+'</textarea><button class="mini" type="button" data-mic="p_'+p.k+'" aria-label="Dictar">'+IMIC+'</button></div>';
+  });
+  function sync(){PANELES.forEach(function(p){S.panels[p.k]=$("p_"+p.k).value.trim();});}
+  return {title:"Resumen ejecutivo",sub:"Paneles del informe",html:h,
+    act:[{l:"Vista previa",p:1,fn:function(){sync();go({s:"pre"});}}],
+    bind:function(){
+      qa("textarea").forEach(function(t){t.addEventListener("input",function(){sync();scheduleSave();});});
+      on("[data-a=auto]",function(){sync();var P=autoPanels(),k=0;PANELES.forEach(function(p){if(!S.panels[p.k]&&P[p.k]){S.panels[p.k]=P[p.k];k++;}});toast(k?k+" paneles completados":"No hay paneles vacíos con datos para completar");redraw();});
+      on("[data-a=redo]",function(){if(!confirm("¿Reemplazar todos los paneles por el borrador automático?"))return;var P=autoPanels();PANELES.forEach(function(p){S.panels[p.k]=P[p.k]||"";});redraw();});
+    }};
+};
+
+/* ---------- informe ---------- */
+function reportHtml(){
+  var m=S.meta,n=counts(),sem=semaforo(),pb=problems(),P=S.panels;
+  var h='<div class="rep"><div class="rhead"><img src="'+LOGO+'" alt="Gestam"><div class="r"><h1>'+esc(TITULO)+'</h1><p>'+esc(SUBT)+'</p><p>Consultora Gestam MDP S.A. — Manejo integrado de plagas — Mar del Plata</p></div></div>';
+  h+='<div class="rmeta">'+[["Cliente / cadena",m.cliente],["Local",m.local],["Período",m.periodo],["Dirección",m.direccion],["Fecha de visita",fmtF(m.fechaVisita)],["Responsable del local",m.encargado],["Realizado por",m.por]]
+    .map(function(r){return '<div><span>'+r[0]+'</span><b>'+esc(r[1]||"—")+'</b></div>';}).join("")+'</div>';
+  h+='<div class="lect" style="--c:'+sem.c+'"><b>Lectura ejecutiva:</b> <span class="sem">'+esc(sem.l)+'</span> · '+n.ev+' puntos evaluados'+
+    ESTADOS.map(function(e){return n[e.k]?' <span class="kp" style="background:'+e.c+'">'+n[e.k]+" "+esc(e.k==="Conforme"?(n[e.k]===1?"conforme":"conformes"):e.k==="Crítico"?(n[e.k]===1?"crítico":"críticos"):e.k==="N/A"?"N/A":(n[e.k]===1?"requiere atención":"requieren atención"))+'</span>':"";}).join("")+'</div>';
+  var pans=PANELES.filter(function(p){return p.k!=="conclusion"&&P[p.k];});
+  if(pans.length)h+='<h2>Estado de situación</h2><div class="pans">'+pans.map(function(p,i){return '<div class="pan'+(i===pans.length-1&&pans.length%2?" w":"")+'"><h3>'+esc(p.t)+'</h3>'+esc(P[p.k])+'</div>';}).join("")+'</div>';
+  if(pb.length){
+    h+='<h2>Plan de acción</h2><table class="ptab"><thead><tr><th>Punto</th><th>Estado</th><th>Acción requerida</th><th>Responsable</th><th>Fecha objetivo</th></tr></thead><tbody>'+
+      pb.map(function(c){var x=C(c.id),e=estOf(x.estado);return '<tr><td><b>'+c.id+'</b> '+esc(c.s)+'</td><td><span class="kp" style="background:'+e.c+'">'+esc(e.sh)+'</span>'+(x.prioridad?'<br><small>Prioridad '+esc(x.prioridad.toLowerCase())+'</small>':"")+'</td><td>'+esc(x.accion||c.a)+'</td><td>'+esc(x.responsable||c.r)+'</td><td>'+esc(fmtF(x.fecha)||"—")+'</td></tr>';}).join("")+'</tbody></table>';
+  }
+  SECC.forEach(function(s){
+    var its=CHECK.filter(function(c){return c.id.charAt(0)===s.k&&C(c.id).estado;});if(!its.length)return;
+    var det=its.filter(function(c){var x=C(c.id);return x.estado!=="Conforme"&&x.estado!=="N/A"||x.obs||x.photos.length;});
+    var oks=its.filter(function(c){return det.indexOf(c)<0;});
+    h+='<h2>'+esc(s.n)+'</h2>';
+    det.forEach(function(c){var x=C(c.id),e=estOf(x.estado);
+      h+='<div class="ri" style="--c:'+e.c+'"><div class="h"><span class="cd">'+c.id+'</span><span class="t">'+esc(c.t)+'</span><span class="kp" style="background:'+e.c+'">'+esc(e.sh)+'</span></div><div class="d">'+
+        (x.prioridad?'<p><b>Prioridad:</b> '+esc(x.prioridad)+'</p>':"")+
+        (x.obs?'<p><b>Hallazgo:</b> '+esc(x.obs).replace(/\n/g,"<br>")+'</p>':"")+
+        ((x.estado==="Crítico"||x.estado==="Requiere atención")?'<p><b>Acción requerida:</b> '+esc(x.accion||c.a)+'</p><p><b>Responsable:</b> '+esc(x.responsable||c.r)+(x.fecha?' · <b>Fecha objetivo:</b> '+fmtF(x.fecha):"")+'</p>':"")+
+        '</div>'+(x.photos.length?'<div class="ph">'+x.photos.map(function(p){return '<img src="'+p.img+'" alt="">';}).join("")+'</div>':"")+'</div>';});
+    if(oks.length)h+='<ul class="okl">'+oks.map(function(c){return '<li><b>'+c.id+'</b> '+esc(c.s)+' — '+esc(C(c.id).estado)+'</li>';}).join("")+'</ul>';
+  });
+  var noev=CHECK.length-n.ev;
+  if(noev&&n.ev)h+='<p class="rfoot" style="border:0;margin-top:10px">Puntos no evaluados en esta visita: '+noev+'.</p>';
+  if(P.conclusion)h+='<h2>Conclusión técnica</h2><div class="pan w">'+esc(P.conclusion)+'</div>';
+  h+='<div class="rfoot">'+esc(PIE)+'</div></div>';
+  return h;
+}
+SCR.pre=function(){
+  return {title:"Vista previa del informe",sub:"Así lo recibe el cliente",
+    html:'<p class="help noprint">Para el PDF: Imprimir → Guardar como PDF. Los puntos sin evaluar no se muestran.</p>'+reportHtml()+
+      '<div class="seg noprint" style="margin-top:14px"><button data-a="exp">Exportar datos (.json)</button><button data-a="datos">Editar datos</button></div>'+
+      '<p class="nota noprint">El archivo de datos se puede abrir en esta app o importar en el Consolidador MIP.</p>',
+    act:[{l:"Checklist",fn:function(){go({s:"chk"});}},{l:"Imprimir / PDF",p:1,fn:function(){saveNow();window.print();}}],
+    bind:function(){on("[data-a=exp]",exportJSON);on("[data-a=datos]",function(){go({s:"datos"});});}};
+};
+
+/* ---------- fotos ---------- */
+var photoTarget=null,MAXS=1280,Q=0.8;
+$("inCam").addEventListener("change",onFiles);$("inGal").addEventListener("change",onFiles);
+function onFiles(e){var fs=Array.prototype.slice.call(e.target.files||[]);e.target.value="";if(!fs.length)return;
+  var tgt=photoTarget,i=0;photoTarget=null;
+  (function next(){if(i>=fs.length){$("toast").classList.remove("show");redraw();return;}
+    toast("Procesando foto "+(i+1)+" de "+fs.length+"…",0);
+    processFile(fs[i++]).then(function(p){(tgt?tgt.photos:pend).push(p);}).catch(function(){toast("No se pudo leer una foto.");}).then(next);})();
+}
+function processFile(f){return new Promise(function(res,rej){var u=URL.createObjectURL(f),im=new Image();
+  im.onload=function(){URL.revokeObjectURL(u);var w=im.naturalWidth,h=im.naturalHeight,k=Math.min(1,MAXS/Math.max(w,h));
+    var c=document.createElement("canvas");c.width=Math.round(w*k);c.height=Math.round(h*k);var x=c.getContext("2d");x.fillStyle="#fff";x.fillRect(0,0,c.width,c.height);x.drawImage(im,0,0,c.width,c.height);
+    res({img:c.toDataURL("image/jpeg",Q),w:c.width,h:c.height});};
+  im.onerror=function(){URL.revokeObjectURL(u);rej();};im.src=u;});}
+
+/* ---------- archivo de datos (compatible con el Consolidador MIP) ---------- */
+var APP="Gestam-MIP-Gastronomia";
+function slug(s){return norm(s||"").replace(/[^a-z0-9]+/g,"_").replace(/^_+|_+$/g,"").slice(0,40)||"local";}
+function toExport(){
+  var meta={};["cliente","local","periodo","direccion","fechaVisita","encargado"].forEach(function(k){meta[k]=S.meta[k]||"";});
+  PANELES.forEach(function(p){meta[p.k]=S.panels[p.k]||"";});
+  return {app:APP,v:1,meta:meta,por:S.meta.por||"",
+    checks:CHECK.map(function(c){var x=C(c.id);return {id:c.id,estado:x.estado,prioridad:x.prioridad,obs:x.obs,accion:x.accion,responsable:x.responsable,fecha:x.fecha,photos:x.photos.map(function(p){return p.img;})};}),
+    log:S.log,savedAt:new Date().toISOString()};
+}
+function download(blob,name){var u=URL.createObjectURL(blob),a=document.createElement("a");a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(u);},4000);}
+function exportJSON(){download(new Blob([JSON.stringify(toExport())],{type:"application/json"}),"MIP_"+slug(S.meta.local||S.meta.cliente)+"_"+(S.meta.fechaVisita||today())+".json");toast("Datos exportados");}
+function str(v){return typeof v==="string"?v:"";}
+function fromExport(o){
+  if(!o||typeof o.meta!=="object"||!Array.isArray(o.checks))throw new Error("fmt");
+  var s=blank(),m=o.meta;
+  ["cliente","local","periodo","direccion","fechaVisita","encargado"].forEach(function(k){s.meta[k]=str(m[k]);});
+  s.meta.por=str(o.por);if(!s.meta.fechaVisita)s.meta.fechaVisita=today();
+  PANELES.forEach(function(p){s.panels[p.k]=str(m[p.k]);});
+  o.checks.forEach(function(d){if(!d||!s.checks[d.id])return;var x=s.checks[d.id];
+    x.estado=estOf(d.estado)?d.estado:"";x.prioridad=prioOf(d.prioridad)?d.prioridad:"";
+    ["obs","accion","responsable","fecha"].forEach(function(k){x[k]=str(d[k]);});
+    x.photos=(Array.isArray(d.photos)?d.photos:[]).map(function(p){return typeof p==="string"?p:p&&p.img;}).filter(function(p){return /^data:image\//.test(p||"");}).map(function(p){return {img:p};});});
+  s.log=Array.isArray(o.log)?o.log.filter(function(l){return l&&chk(l.id);}).slice(0,40):[];
+  return s;
+}
+$("inJson").addEventListener("change",function(e){var f=e.target.files&&e.target.files[0];e.target.value="";if(!f)return;
+  var r=new FileReader();r.onload=function(){try{S=fromExport(JSON.parse(r.result));draft=null;pend=[];stack=[{s:"home"}];go({s:"cap"});toast("Datos abiertos");}catch(err){toast("El archivo no tiene el formato esperado.",4000);}};r.readAsText(f);});
+
+/* ---------- respaldo automático (IndexedDB) ---------- */
+var db=null,sT;
+function hasData(){return !!(S.meta.cliente||evaluated().length||S.log.length);}
+function saveNow(){clearTimeout(sT);if(!db)return;try{var os=db.transaction("kv","readwrite").objectStore("kv");if(hasData())os.put({app:APP,s:S,pend:pend,t:Date.now()},"actual");else os.delete("actual");}catch(e){}}
+function scheduleSave(){clearTimeout(sT);sT=setTimeout(saveNow,300);}
+document.addEventListener("visibilitychange",function(){if(document.visibilityState==="hidden")saveNow();});
+window.addEventListener("pagehide",saveNow);
+(function(){try{if(!window.indexedDB)return;var rq=indexedDB.open("gestam-mip-gastronomia",1);
+  rq.onupgradeneeded=function(){rq.result.createObjectStore("kv");};
+  rq.onsuccess=function(){db=rq.result;try{var g=db.transaction("kv").objectStore("kv").get("actual");
+    g.onsuccess=function(){var o=g.result;if(o&&o.s&&!hasData()&&cur().s==="home"){try{var b=blank();
+      Object.keys(b.meta).forEach(function(k){b.meta[k]=str((o.s.meta||{})[k])||b.meta[k];});
+      PANELES.forEach(function(p){b.panels[p.k]=str((o.s.panels||{})[p.k]);});
+      CHECK.forEach(function(c){var x=(o.s.checks||{})[c.id];if(x)b.checks[c.id]=x;});
+      b.log=o.s.log||[];S=b;pend=o.pend||[];draw();}catch(e){}}};}catch(e){}};}catch(e){}})();
+
+/* ---------- teclado en móviles ---------- */
+var vv=window.visualViewport,app=$("app");
+function fitVV(){if(!vv)return;app.style.height=vv.height+"px";app.style.top=vv.offsetTop+"px";app.classList.toggle("kb",vv.height<window.innerHeight*0.8);}
+if(vv){vv.addEventListener("resize",fitVV);vv.addEventListener("scroll",fitVV);}
+window.addEventListener("beforeprint",function(){app.style.height="";app.style.top="";});
+
+try{history.replaceState({n:1},"");}catch(e){}
+draw();fitVV();
+window.MipGastro={state:function(){return S;},interpret:interpret,applyDraft:applyDraft,autoPanels:autoPanels,reportHtml:reportHtml,toExport:toExport,fromExport:fromExport,go:go};
+})();
+</script>
+</body>
+</html>
